@@ -1,0 +1,9 @@
+Package: org.thebigboss.camelapsedplus
+Name: CamElapsed+
+Depends: mobilesubstrate, preferenceloader, firmware (>= 7.0)
+Version: 1.0
+Architecture: iphoneos-arm
+Description: Because the old resolution is not cool.
+Author: PoomSmart
+Section: Tweaks
+Icon: file:///Library/PreferenceLoader/Preferences/MAVTPS/CE@2x.png
