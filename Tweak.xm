@@ -1,35 +1,13 @@
 #import <substrate.h>
 
-#define isiOS7 (kCFCoreFoundationVersionNumber >= 800.00)
 #define PREF_PATH @"/var/mobile/Library/Preferences/com.PS.MoreAccurateVideoTime.plist"
 #define PreferencesChangedNotification "com.PS.MoreAccurateVideoTime.prefs"
 
 static int string = 1;
 
-@interface CAMElapsedTimeView
-@property(readonly, assign, nonatomic) NSDate* _startTime;
-@property(readonly, assign, nonatomic) NSTimer* _updateTimer;
-@property(readonly, assign, nonatomic) UIImageView* _recordingImageView;
-@property(readonly, assign, nonatomic) UILabel* _timeLabel;
-- (void)resetTimer;
-- (void)endTimer;
-- (void)_endRecordingAnimation;
+@interface CAMElapsedTimeView : UIView
 - (void)_beginRecordingAnimation;
-- (void)_commonCAMElapsedTimeViewInitialization;
-- (void)_update:(NSTimer *)update;
-- (void)startTimer;
-- (CGSize)sizeThatFits:(CGSize)fits;
-- (void)layoutSubviews;
-- (id)initWithCoder:(id)coder;
-- (void)dealloc;
-- (id)initWithFrame:(CGRect)frame;
 @end
-
-@interface PLCameraView : UIView
-@property(readonly, assign, nonatomic) CAMElapsedTimeView* _elapsedTimeView;
-@end
-
-NSMutableArray *array = [NSMutableArray array];
 
 %hook CAMElapsedTimeView
 
