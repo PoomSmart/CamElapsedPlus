@@ -86,6 +86,8 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MAVT();
+	dlopen("/System/Library/PrivateFrameworks/PhotoLibrary.framework/PhotoLibrary", RTLD_LAZY);
+	dlopen("/System/Library/PrivateFrameworks/CameraKit.framework/CameraKit", RTLD_LAZY);
 	%init;
 	[pool drain];
 }

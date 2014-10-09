@@ -20,6 +20,8 @@
         <string>PSGroupCell</string>
         <key>label</key>
         <string>Select Resolution</string>
+        <key>footerAlignment</key>
+        <integer>1</integer>
         <key>footerText</key>
         <string>© 2013 - 2014 Thuchapol Unprasert
 (@PoomSmart)</string>
