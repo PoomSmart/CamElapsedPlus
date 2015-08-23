@@ -1,15 +1,11 @@
-#import <substrate.h>
+#import "../PS.h"
 
-#define PREF_PATH @"/var/mobile/Library/Preferences/com.PS.MoreAccurateVideoTime.plist"
-#define PreferencesChangedNotification "com.PS.MoreAccurateVideoTime.prefs"
+NSString *PREF_PATH = @"/var/mobile/Library/Preferences/com.PS.MoreAccurateVideoTime.plist";
+CFStringRef PreferencesChangedNotification = CFSTR("com.PS.MoreAccurateVideoTime.prefs");
 
-static int string = 1;
+static int string;
 
-@interface CAMElapsedTimeView : UIView
-- (void)_beginRecordingAnimation;
-@end
-
-%hook CAMElapsedTimeView
+%hook ElapsedTimeView
 
 - (void)_update:(NSTimer *)update
 {
@@ -18,14 +14,10 @@ static int string = 1;
 		return;
 	}
 	NSDate *startDate = MSHookIvar<NSDate *>(self, "__startTime");
-	UILabel *timeLabel = MSHookIvar<UILabel*>(self, "__timeLabel");
-	
 	NSDate *currentDate = [NSDate date];
 	NSTimeInterval interval = [currentDate timeIntervalSinceDate:startDate];
 	NSDate *timerDate = [NSDate dateWithTimeIntervalSince1970:interval];
-	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	
 	NSString *format;
 	switch (string) {
 		case 2:
@@ -41,13 +33,12 @@ static int string = 1;
 			format = @"HH:mm:ss";
 			break;
 	}
-	[dateFormatter setDateFormat:format];
+	dateFormatter.dateFormat = format;
 	[dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
-	
 	NSString *timeString = [dateFormatter stringFromDate:timerDate];
-	[timeLabel setText:timeString];
-	
+	[self _timeLabel].text = timeString;
 	[dateFormatter release];
+	//[self setNeedsLayout];
 }
 
 - (void)startTimer
@@ -59,12 +50,15 @@ static int string = 1;
 	[MSHookIvar<NSDate *>(self, "__startTime") release];
 	NSTimer *updateTimer = MSHookIvar<NSTimer *>(self, "__updateTimer");
 	[updateTimer invalidate];
+	[self _update:nil];
 	
 	MSHookIvar<NSDate *>(self, "__startTime") = [[NSDate alloc] init];
 	[updateTimer invalidate];
-	float interval = pow(10, -string);
-	NSTimer *timer= [[NSTimer alloc] initWithFireDate:MSHookIvar<NSDate *>(self, "__startTime") interval:interval target:self selector:@selector(_update:) userInfo:nil repeats:YES];
-	[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+	NSTimeInterval interval = (NSTimeInterval)pow(10, -string);
+	[MSHookIvar<NSTimer *>(self, "__updateTimer") release];
+	MSHookIvar<NSTimer *>(self, "__updateTimer") = [[NSTimer alloc] initWithFireDate:MSHookIvar<NSDate *>(self, "__startTime") interval:interval target:self selector:@selector(_update:) userInfo:nil repeats:YES];
+	[[NSRunLoop currentRunLoop] addTimer:MSHookIvar<NSTimer *>(self, "__updateTimer") forMode:NSDefaultRunLoopMode];
+	[[NSRunLoop currentRunLoop] addTimer:MSHookIvar<NSTimer *>(self, "__updateTimer") forMode:UITrackingRunLoopMode];
 	[self _beginRecordingAnimation];
 }
 
@@ -73,7 +67,7 @@ static int string = 1;
 static void MAVT()
 {
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
-	string = [[dict objectForKey:@"string"] intValue];
+	string = [dict[@"string"] intValue];
 }
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
@@ -82,12 +76,13 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	MAVT();
 }
 
-%ctor {
+%ctor
+{
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, PreferencesChangedNotification, NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MAVT();
 	dlopen("/System/Library/PrivateFrameworks/PhotoLibrary.framework/PhotoLibrary", RTLD_LAZY);
 	dlopen("/System/Library/PrivateFrameworks/CameraKit.framework/CameraKit", RTLD_LAZY);
-	%init;
+	%init(ElapsedTimeView = isiOS9Up ? objc_getClass("CMKElapsedTimeView") : objc_getClass("CAMElapsedTimeView"));
 	[pool drain];
 }
