@@ -5,7 +5,7 @@ CFStringRef PreferencesChangedNotification = CFSTR("com.PS.MoreAccurateVideoTime
 
 static int string;
 
-%hook ElapsedTimeView
+%hook CAMElapsedTimeView
 
 - (void)_update:(NSTimer *)update
 {
@@ -81,8 +81,12 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, PreferencesChangedNotification, NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MAVT();
-	dlopen("/System/Library/PrivateFrameworks/PhotoLibrary.framework/PhotoLibrary", RTLD_LAZY);
-	dlopen("/System/Library/PrivateFrameworks/CameraKit.framework/CameraKit", RTLD_LAZY);
-	%init(ElapsedTimeView = isiOS9Up ? objc_getClass("CMKElapsedTimeView") : objc_getClass("CAMElapsedTimeView"));
+	if (isiOS9Up) {
+		dlopen("/System/Library/PrivateFrameworks/CameraUI.framework/CameraUI", RTLD_LAZY);
+	} else {
+		dlopen("/System/Library/PrivateFrameworks/PhotoLibrary.framework/PhotoLibrary", RTLD_LAZY);
+		dlopen("/System/Library/PrivateFrameworks/CameraKit.framework/CameraKit", RTLD_LAZY);
+	}
+	%init;
 	[pool drain];
 }
