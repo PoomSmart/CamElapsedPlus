@@ -1,9 +1,10 @@
+#define KILL_PROCESS
 #import "../PS.h"
 
 NSString *PREF_PATH = @"/var/mobile/Library/Preferences/com.PS.MoreAccurateVideoTime.plist";
 CFStringRef PreferencesChangedNotification = CFSTR("com.PS.MoreAccurateVideoTime.prefs");
 
-static int string;
+int string;
 
 %hook CAMElapsedTimeView
 
@@ -51,7 +52,6 @@ static int string;
 	NSTimer *updateTimer = MSHookIvar<NSTimer *>(self, "__updateTimer");
 	[updateTimer invalidate];
 	[self _update:nil];
-	
 	MSHookIvar<NSDate *>(self, "__startTime") = [[NSDate alloc] init];
 	[updateTimer invalidate];
 	NSTimeInterval interval = (NSTimeInterval)pow(10, -string);
@@ -72,7 +72,7 @@ static void MAVT()
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
 {
-	system("killall Camera");
+	killProcess("Camera");
 	MAVT();
 }
 
@@ -81,12 +81,12 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, PreferencesChangedNotification, NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MAVT();
-	if (isiOS9Up) {
-		dlopen("/System/Library/PrivateFrameworks/CameraUI.framework/CameraUI", RTLD_LAZY);
-	} else {
-		dlopen("/System/Library/PrivateFrameworks/PhotoLibrary.framework/PhotoLibrary", RTLD_LAZY);
-		dlopen("/System/Library/PrivateFrameworks/CameraKit.framework/CameraKit", RTLD_LAZY);
-	}
+	if (isiOS9Up)
+		openCamera9();
+	else if (isiOS8Up)
+		openCamera8();
+	else
+		openCamera7();
 	%init;
 	[pool drain];
 }
