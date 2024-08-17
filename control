@@ -1,9 +1,11 @@
-Package: org.thebigboss.camelapsedplus
+Package: com.ps.camelapsedplus
 Name: CamElapsed+
-Depends: mobilesubstrate, preferenceloader, firmware (>= 7.0)
-Version: 1.0
+Depends: mobilesubstrate, preferenceloader, firmware (>= 11.0)
+Replaces: org.thebigboss.camelapsedplus
+Conflicts: org.thebigboss.camelapsedplus
+Provides: org.thebigboss.camelapsedplus
+Version: 1.0.0
 Architecture: iphoneos-arm
-Description: Because the old resolution is not cool.
+Description: Add more accurate video time to Camera app.
 Author: PoomSmart
 Section: Tweaks
-Icon: file:///Library/PreferenceLoader/Preferences/MAVTPS/CE@2x.png

@@ -23,20 +23,17 @@
         <key>footerAlignment</key>
         <integer>1</integer>
         <key>footerText</key>
-        <string>© 2013 - 2015 Thatchapon Unprasert
-(@PoomSmart)</string>
+        <string>© 2013 - 2024 PoomSmart</string>
       </dict>
       <dict>
 			<key>cell</key>
 			<string>PSLinkListCell</string>
 			<key>defaults</key>
-			<string>com.PS.MoreAccurateVideoTime</string>
-			<key>PostNotification</key>
-        	<string>com.PS.MoreAccurateVideoTime.prefs</string>
+			<string>com.apple.camera</string>
 			<key>detail</key>
 			<string>PSListItemsController</string>
 			<key>key</key>
-			<string>string</string>
+			<string>MAVT_FormatType</string>
 			<key>label</key>
 			<string>Type</string>
 			<key>staticTextMessage</key>
