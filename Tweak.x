@@ -7,10 +7,6 @@ int string;
 %hook CAMElapsedTimeView
 
 - (void)_updateText {
-    if (string <= 1) {
-        %orig;
-        return;
-    }
     NSDate *startDate = [self valueForKey:@"__startTime"];
     NSDate *currentDate = [NSDate date];
     NSTimeInterval interval = [currentDate timeIntervalSinceDate:startDate];
@@ -38,10 +34,6 @@ int string;
 }
 
 - (void)startTimer {
-    if (string <= 1) {
-        %orig;
-        return;
-    }
     NSTimer *updateTimer = [self valueForKey:@"__updateTimer"];
     [updateTimer invalidate];
     NSDate *startTime = [[NSDate alloc] init];
@@ -57,6 +49,7 @@ int string;
 
 %ctor {
     string = [[NSUserDefaults standardUserDefaults] integerForKey:@"MAVT_FormatType"];
+    if (string <= 1) return;
     openCamera10();
     %init;
 }

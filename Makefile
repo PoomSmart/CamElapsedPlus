@@ -1,5 +1,10 @@
-TARGET = iphone:clang:latest:11.0
-PACKAGE_VERSION = 1.0.0-1
+ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
+TARGET = iphone:clang:latest:14.0
+else
+TARGET = iphone:clang:14.5:11.0
+export PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
+endif
+PACKAGE_VERSION = 1.0.1
 
 include $(THEOS)/makefiles/common.mk
 
@@ -8,7 +13,3 @@ $(TWEAK_NAME)_FILES = Tweak.x
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-
-internal-stage::
-	$(ECHO_NOTHING)mkdir -p $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences$(ECHO_END)
-	$(ECHO_NOTHING)cp -R MAVTPS $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences/MAVTPS$(ECHO_END)

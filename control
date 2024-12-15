@@ -6,8 +6,9 @@ Conflicts: org.thebigboss.camelapsedplus
 Provides: org.thebigboss.camelapsedplus
 Version: 1.0.0
 Architecture: iphoneos-arm
-Description: Add sub-seconds to an elapsed time when recording a video in Camera app.
+Description: Add sub-seconds to an elapsed time when recording a video in iOS Camera app.
 Author: PoomSmart
+Maintainer: PoomSmart
 Section: Tweaks
 Depiction: https://poomsmart.github.io/repo/depictions/camelapsedplus.html
 SileoDepiction: https://poomsmart.github.io/repo/sileodepictions/camelapsedplus.json
